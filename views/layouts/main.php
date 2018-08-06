@@ -1,6 +1,7 @@
 <?php
 
 /* @var $this \yii\web\View */
+
 /* @var $content string */
 
 use app\widgets\Alert;
@@ -35,25 +36,34 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
+
+    $items[] = ['label' => 'Home', 'url' => ['/']];
+
+    if (Yii::$app->user->isGuest) {
+        $items[] = ['label' => 'Zaloguj się', 'url' => ['/auth/login']];
+        $items[] = ['label' => 'Zarejestruj się', 'url' => ['/auth/registration']];
+    } else {
+        $items[] = [
+            'label' => Yii::$app->user->identity->name,
+            'items' => [
+                ['label' => 'Profil', 'url' => '#'],
+                '<li class="divider"></li>',
                 '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
+                . Html::beginForm(['/auth/logout'], 'post')
                 . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
+                    'Wyloguj się',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()
-                . '</li>'
-            )
-        ],
+                . '</li>',
+            ],
+        ];
+    }
+
+
+    echo Nav::widget([
+        'options' => ['class' => 'navbar-nav navbar-right'],
+        'items' => $items,
     ]);
     NavBar::end();
     ?>
